@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apostila: Modelos ARCH e GARCH</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #1a237e;
+            border-bottom: 3px solid #3949ab;
+            padding-bottom: 15px;
+        }
+        h2 {
+            color: #283593;
+            border-left: 5px solid #5c6bc0;
+            padding-left: 15px;
+            margin-top: 40px;
+        }
+        h3 {
+            color: #3949ab;
+            margin-top: 25px;
+        }
+        .autor {
+            text-align: center;
+            font-size: 1.2em;
+            color: #1a237e;
+            margin: 10px 0 5px 0;
+            font-weight: 600;
+        }
+        .subtitulo {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 30px;
+        }
+        
+        /* Índice */
+        .indice {
+            background: #e8eaf6;
+            border: 2px solid #3949ab;
+            border-radius: 10px;
+            padding: 20px 30px;
+            margin: 30px 0;
+        }
+        .indice h2 {
+            border: none;
+            padding: 0;
+            margin-top: 0;
+            text-align: center;
+        }
+        .indice ol {
+            column-gap: 40px;
+        }
+        .indice a {
+            color: #1a237e;
+            text-decoration: none;
+        }
+        .indice a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Caixas de Fórmulas */
+        .formula-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border: 2px solid #1976d2;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        .formula-box.importante {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border-color: #f57c00;
+        }
+        .formula-box.resultado {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-color: #388e3c;
+        }
+        .formula-box.alerta {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            border-color: #d32f2f;
+        }
+        .formula-box.roxo {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            border-color: #7b1fa2;
+        }
+        
+        /* Definições */
+        .definicao {
+            background: #f3e5f5;
+            border-left: 5px solid #7b1fa2;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .definicao strong {
+            color: #7b1fa2;
+        }
+        
+        /* Propriedades */
+        .propriedade {
+            background: #e0f7fa;
+            border: 1px solid #00acc1;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin: 15px 0;
+        }
+        
+        /* Dicas */
+        .dica {
+            background: #fff8e1;
+            border-left: 5px solid #ffc107;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .dica::before {
+            content: "💡 Dica: ";
+            font-weight: bold;
+            color: #f57f17;
+        }
+        
+        /* Exemplo */
+        .exemplo {
+            background: #fce4ec;
+            border: 1px dashed #e91e63;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin: 20px 0;
+        }
+        .exemplo::before {
+            content: "📝 Exemplo: ";
+            font-weight: bold;
+            color: #c2185b;
+        }
+        
+        /* Resumo */
+        .resumo {
+            background: #e8eaf6;
+            border: 2px solid #3f51b5;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .resumo h3 {
+            margin-top: 0;
+            text-align: center;
+        }
+        
+        /* Tabelas */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+        }
+        th, td {
+            border: 1px solid #90caf9;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background: #1976d2;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background: #e3f2fd;
+        }
+        
+        /* Código matemático inline */
+        code {
+            background: #eceff1;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        /* Passos de demonstração */
+        .passo {
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+        }
+        .passo-num {
+            display: inline-block;
+            background: #3949ab;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        /* Teorema */
+        .teorema {
+            background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
+            border: 2px solid #3f51b5;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .teorema-titulo {
+            font-weight: bold;
+            color: #1a237e;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        /* Seção nova */
+        .secao-nova {
+            border: 3px solid #4caf50;
+            border-radius: 10px;
+            padding: 5px;
+            margin: 10px 0;
+        }
+        .secao-nova::before {
+            content: "🆕 NOVO";
+            background: #4caf50;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<h1>📊 Apostila de Modelos ARCH e GARCH</h1>
+<p class="autor">Lucas Rafael de Andrade</p>
+<p class="subtitulo">Fundamentos teóricos para análise de volatilidade em séries temporais financeiras</p>
+
+<nav class="indice">
+    <h2>📑 Índice</h2>
+    <ol>
+        <li><a href="#intro">Introdução e Motivação</a></li>
+        <li><a href="#prereq">Pré-requisitos Matemáticos</a></li>
+        <li><a href="#momentos">Momentos e Esperanças</a></li>
+        <li><a href="#arch">Modelo ARCH(1)</a></li>
+        <li><a href="#garch">Modelo GARCH(1,1)</a></li>
+        <li><a href="#curtose">Curtose e Caudas Pesadas</a></li>
+        <li><a href="#ar-quadrados">Representação AR para y²</a></li>
+        <li><a href="#fac">Função de Autocorrelação</a></li>
+        <li><a href="#condicoes">Condições de Estacionariedade</a></li>
+        <li><a href="#resumo-final">Resumo de Fórmulas</a></li>
+        <li><a href="#raiz-unitaria">🆕 Raiz Unitária e Testes de Estacionariedade</a></li>
+        <li><a href="#tendencias">🆕 Tendência Determinística vs. Estocástica</a></li>
+        <li><a href="#mds">🆕 Sequência de Diferenças de Martingais (MDS)</a></li>
+        <li><a href="#ortogonalidade">🆕 Ortogonalidade e Consistência de OLS</a></li>
+        <li><a href="#previsao">🆕 Previsão de Volatilidade e VaR</a></li>
+        <li><a href="#ehtsq">🆕 Cálculo Detalhado de E[h²<sub>t</sub>]</a></li>
+    </ol>
+</nav>
+
+<!-- SEÇÃO 1 -->
+<section id="intro">
+<h2>1. Introdução e Motivação</h2>
+
+<p>Os modelos ARCH (Autoregressive Conditional Heteroskedasticity) e GARCH (Generalized ARCH) foram desenvolvidos para capturar características importantes de séries financeiras:</p>
+
+<ul>
+    <li><strong>Clustering de volatilidade:</strong> períodos de alta volatilidade tendem a ser seguidos por alta volatilidade</li>
+    <li><strong>Caudas pesadas:</strong> retornos financeiros têm mais valores extremos que a distribuição normal</li>
+    <li><strong>Heterocedasticidade:</strong> a variância dos retornos muda ao longo do tempo</li>
+</ul>
+
+<div class="definicao">
+    <strong>Ideia Central:</strong> A variância condicional h<sub>t</sub> (variância dado o passado) depende de choques passados, enquanto a variância incondicional é constante ao longo do tempo (sob estacionariedade).
+</div>
+</section>
+
+<!-- SEÇÃO 2 -->
+<section id="prereq">
+<h2>2. Pré-requisitos Matemáticos</h2>
+
+<h3>2.1 Distribuição Normal Padrão</h3>
+<p>Se ε<sub>t</sub> ~ N(0,1), então:</p>
+
+<div class="formula-box importante">
+    <strong>Momentos da Normal Padrão</strong><br><br>
+    E[ε<sub>t</sub>] = 0 &nbsp;&nbsp;&nbsp;&nbsp; 
+    E[ε<sub>t</sub>²] = 1 &nbsp;&nbsp;&nbsp;&nbsp;
+    E[ε<sub>t</sub>³] = 0 &nbsp;&nbsp;&nbsp;&nbsp;
+    <strong>E[ε<sub>t</sub>⁴] = 3</strong>
+</div>
+
+<div class="dica">
+    O valor E[ε⁴] = 3 é crucial para calcular o quarto momento e a curtose nos modelos ARCH/GARCH.
+</div>
+
+<h3>2.2 Independência e Esperança</h3>
+
+<div class="propriedade">
+    <strong>Propriedade Fundamental:</strong> Se X e Y são independentes, então:<br><br>
+    <center>E[XY] = E[X] · E[Y]</center><br>
+    No contexto ARCH: ε<sub>t</sub> é independente de h<sub>t</sub> (que depende apenas de informação até t-1).
+</div>
+
+<h3>2.3 Lei da Esperança Iterada (LEI)</h3>
+
+<div class="formula-box">
+    E[Y] = E[E[Y | X]]
+</div>
+
+<p>Em palavras: a esperança incondicional é a esperança da esperança condicional.</p>
+
+<h3>2.4 Lei da Variância Total</h3>
+
+<div class="formula-box importante">
+    <strong>Lei da Variância Total:</strong><br><br>
+    Var(Y) = E[Var(Y|X)] + Var(E[Y|X])
+</div>
+
+<p>Em palavras: a variância total é a média da variância condicional mais a variância da média condicional.</p>
+
+<h3>2.5 Conjunto de Informação</h3>
+
+<div class="definicao">
+    <strong>I<sub>t-1</sub></strong> representa toda informação disponível até o tempo t-1, incluindo:
+    y<sub>t-1</sub>, y<sub>t-2</sub>, ..., h<sub>t-1</sub>, h<sub>t-2</sub>, ...
+</div>
+</section>
+
+<!-- SEÇÃO 3 -->
+<section id="momentos">
+<h2>3. Momentos e Esperanças</h2>
+
+<h3>3.1 Esperança Condicional vs Incondicional</h3>
+
+<table>
+    <tr>
+        <th>Tipo</th>
+        <th>Notação</th>
+        <th>Significado</th>
+    </tr>
+    <tr>
+        <td>Condicional</td>
+        <td>E[y<sub>t</sub> | I<sub>t-1</sub>]</td>
+        <td>Esperança dado o passado observado</td>
+    </tr>
+    <tr>
+        <td>Incondicional</td>
+        <td>E[y<sub>t</sub>]</td>
+        <td>Esperança "de longo prazo"</td>
+    </tr>
+</table>
+
+<h3>3.2 Variância Condicional vs Incondicional</h3>
+
+<div class="formula-box">
+    <strong>Variância Condicional:</strong><br>
+    Var(y<sub>t</sub> | I<sub>t-1</sub>) = E[y<sub>t</sub>² | I<sub>t-1</sub>] − (E[y<sub>t</sub> | I<sub>t-1</sub>])²
+</div>
+
+<div class="formula-box">
+    <strong>Variância Incondicional:</strong><br>
+    Var(y<sub>t</sub>) = E[y<sub>t</sub>²] − (E[y<sub>t</sub>])²
+</div>
+
+<div class="dica">
+    Quando E[y<sub>t</sub>] = 0 (caso comum em ARCH/GARCH), temos simplesmente:<br>
+    Var(y<sub>t</sub>) = E[y<sub>t</sub>²]
+</div>
+
+<h3>3.3 Técnica da Estacionariedade</h3>
+
+<div class="propriedade">
+    <strong>Estacionariedade Fraca:</strong> Sob estacionariedade, os momentos não dependem do tempo:<br><br>
+    <center>
+        E[y<sub>t</sub>²] = E[y<sub>t-1</sub>²] = μ₂<br><br>
+        E[y<sub>t</sub>⁴] = E[y<sub>t-1</sub>⁴] = μ₄<br><br>
+        E[h<sub>t</sub>] = E[h<sub>t-1</sub>]
+    </center>
+</div>
+
+<p>Esta propriedade permite resolver equações de ponto fixo para encontrar momentos incondicionais.</p>
+</section>
+
+<!-- SEÇÃO 4 -->
+<section id="arch">
+<h2>4. Modelo ARCH(1)</h2>
+
+<h3>4.1 Especificação do Modelo</h3>
+
+<div class="formula-box importante">
+    <strong>Modelo ARCH(1)</strong><br><br>
+    y<sub>t</sub> = h<sub>t</sub><sup>1/2</sup> ε<sub>t</sub><br><br>
+    h<sub>t</sub> = ω + α y<sub>t-1</sub>²<br><br>
+    onde ε<sub>t</sub> ~ N(0,1), ω > 0, 0 < α < 1
+</div>
+
+<h3>4.2 Média Condicional e Incondicional</h3>
+
+<div class="passo">
+    <span class="passo-num">1</span>
+    <strong>Média Condicional:</strong><br>
+    E[y<sub>t</sub> | I<sub>t-1</sub>] = E[h<sub>t</sub><sup>1/2</sup> ε<sub>t</sub> | I<sub>t-1</sub>] = h<sub>t</sub><sup>1/2</sup> E[ε<sub>t</sub>] = <strong>0</strong>
+</div>
+
+<div class="passo">
+    <span class="passo-num">2</span>
+    <strong>Média Incondicional:</strong><br>
+    Pela LEI: E[y<sub>t</sub>] = E[E[y<sub>t</sub> | I<sub>t-1</sub>]] = E[0] = <strong>0</strong>
+</div>
+
+<h3>4.3 Variância Condicional</h3>
+
+<div class="passo">
+    <span class="passo-num">1</span>
+    y<sub>t</sub>² = h<sub>t</sub> ε<sub>t</sub>²
+</div>
+
+<div class="passo">
+    <span class="passo-num">2</span>
+    E[y<sub>t</sub>² | I<sub>t-1</sub>] = h<sub>t</sub> E[ε<sub>t</sub>²] = h<sub>t</sub> · 1 = h<sub>t</sub>
+</div>
+
+<div class="formula-box resultado">
+    <strong>Variância Condicional do ARCH(1):</strong><br><br>
+    Var(y<sub>t</sub> | I<sub>t-1</sub>) = h<sub>t</sub> = ω + α y<sub>t-1</sub>²
+</div>
+
+<h3>4.4 Variância Incondicional</h3>
+
+<div class="passo">
+    <span class="passo-num">1</span>
+    <strong>Partindo de:</strong> E[y<sub>t</sub>²] = E[h<sub>t</sub>] (pois E[ε<sub>t</sub>²] = 1)
+</div>
+
+<div class="passo">
+    <span class="passo-num">2</span>
+    <strong>Tomando esperança em h<sub>t</sub>:</strong><br>
+    E[h<sub>t</sub>] = ω + α E[y<sub>t-1</sub>²]
+</div>
+
+<div class="passo">
+    <span class="passo-num">3</span>
+    <strong>Por estacionariedade:</strong> E[y<sub>t</sub>²] = E[y<sub>t-1</sub>²], então:<br>
+    μ₂ = ω + α μ₂
+</div>
+
+<div class="passo">
+    <span class="passo-num">4</span>
+    <strong>Resolvendo:</strong> μ₂(1 - α) = ω
+</div>
+
+<div class="formula-box resultado">
+    <strong>Variância Incondicional do ARCH(1):</strong><br><br>
+    Var(y<sub>t</sub>) = E[y<sub>t</sub>²] = μ₂ = ω / (1 - α)
+</div>
+</section>
+
+<!-- SEÇÃO 5 -->
+<section id="garch">
+<h2>5. Modelo GARCH(1,1)</h2>
+
+<h3>5.1 Especificação do Modelo</h3>
+
+<div class="formula-box importante">
+    <strong>Modelo GARCH(1,1)</strong><br><br>
+    y<sub>t</sub> = h<sub>t</sub><sup>1/2</sup> ε<sub>t</sub><br><br>
+    h<sub>t</sub> = ω + α y<sub>t-1</sub>² + β h<sub>t-1</sub><br><br>
+    onde ε<sub>t</sub> ~ N(0,1), ω > 0, α ≥ 0, β ≥ 0, α + β < 1
+</div>
+
+<div class="dica">
+    O termo β h<sub>t-1</sub> adiciona "memória" ao modelo, permitindo capturar persistência na volatilidade de forma mais parcimoniosa que um ARCH de ordem alta.
+</div>
+
+<h3>5.2 Média e Variância Condicionais</h3>
+
+<p>O cálculo é análogo ao ARCH(1):</p>
+
+<div class="formula-box resultado">
+    E[y<sub>t</sub> | I<sub>t-1</sub>] = 0<br><br>
+    Var(y<sub>t</sub> | I<sub>t-1</sub>) = h<sub>t</sub> = ω + α y<sub>t-1</sub>² + β h<sub>t-1</sub>
+</div>
+
+<h3>5.3 Variância Incondicional</h3>
+
+<div class="passo">
+    <span class="passo-num">1</span>
+    <strong>Tomando esperança:</strong><br>
+    E[h<sub>t</sub>] = ω + α E[y<sub>t-1</sub>²] + β E[h<sub>t-1</sub>]
+</div>
+
+<div class="passo">
+    <span class="passo-num">2</span>
+    <strong>Por estacionariedade:</strong> E[y<sub>t-1</sub>²] = E[h<sub>t-1</sub>] = E[h<sub>t</sub>]
+</div>
+
+<div class="passo">
+    <span class="passo-num">3</span>
+    <strong>Substituindo:</strong><br>
+    E[h<sub>t</sub>] = ω + (α + β) E[h<sub>t</sub>]
+</div>
+
+<div class="passo">
+    <span class="passo-num">4</span>
+    E[h<sub>t</sub>](1 - α - β) = ω
+</div>
+
+<div class="formula-box resultado">
+    <strong>Variância Incondicional do GARCH(1,1):</strong><br><br>
+    σ̄² = Var(y<sub>t</sub>) = ω / (1 - α - β)
+</div>
+
+<h3>5.4 Modelo AR(1)-ARCH(1) Combinado</h3>
+
+<p>Podemos ter dependência na média E NA variância:</p>
+
+<div class="formula-box">
+    y<sub>t</sub> = φ y<sub>t-1</sub> + u<sub>t</sub><br><br>
+    u<sub>t</sub> = h<sub>t</sub><sup>1/2</sup> ε<sub>t</sub><br><br>
+    h<sub>t</sub> = ω + α u<sub>t-1</sub>²
+</div>
+
+<p>Para este modelo:</p>
+
+<div class="formula-box resultado">
+    <strong>Média condicional:</strong> E[y<sub>t</sub> | I<sub>t-1</sub>] = φ y<sub>t-1</sub><br><br>
+    <strong>Variância condicional:</strong> Var(y<sub>t</sub> | I<sub>t-1</sub>) = h<sub>t</sub><br><br>
+    <strong>Média incondicional:</strong> E[y<sub>t</sub>] = 0 (se não há intercepto)<br><br>
+    <strong>Variância incondicional:</strong> Var(y<sub>t</sub>) = ω / [(1 - α)(1 - φ²)]
+</div>
+</section>
+
+<!-- SEÇÃO 6 -->
+<section id="curtose">
+<h2>6. Curtose e Caudas Pesadas</h2>
+
+<h3>6.1 Definição de Curtose</h3>
+
+<div class="formula-box">
+    <strong>Curtose:</strong><br><br>
+    K<sub>y</sub> = E[y<sub>t</sub>⁴] / (E[y<sub>t</sub>²])² = μ₄ / μ₂²
+</div>
+
+<div class="propriedade">
+    <strong>Interpretação:</strong><br>
+    • K = 3: distribuição normal (mesocúrtica)<br>
+    • K > 3: caudas mais pesadas que a normal (leptocúrtica)<br>
+    • K < 3: caudas mais leves que a normal (platicúrtica)
+</div>
+
+<h3>6.2 Curtose do ARCH(1)</h3>
+
+<h4>Passo 1: Calcular E[h<sub>t</sub>²]</h4>
+
+<div class="passo">
+    h<sub>t</sub>² = (ω + α y<sub>t-1</sub>²)² = ω² + 2αω y<sub>t-1</sub>² + α² y<sub>t-1</sub>⁴
+</div>
+
+<div class="passo">
+    E[h<sub>t</sub>²] = ω² + 2αω μ₂ + α² μ₄
+</div>
+
+<h4>Passo 2: Usar μ₄ = 3 E[h<sub>t</sub>²]</h4>
+
+<div class="passo">
+    Como y<sub>t</sub>⁴ = h<sub>t</sub>² ε<sub>t</sub>⁴ e E[ε<sub>t</sub>⁴] = 3:<br>
+    μ₄ = 3 E[h<sub>t</sub>²]
+</div>
+
+<h4>Passo 3: Resolver para E[h<sub>t</sub>²]</h4>
+
+<div class="passo">
+    E[h<sub>t</sub>²] = ω² + 2αω μ₂ + 3α² E[h<sub>t</sub>²]<br><br>
+    E[h<sub>t</sub>²](1 - 3α²) = ω² + 2αω μ₂<br><br>
+    Usando μ₂ = ω/(1-α):<br>
+    E[h<sub>t</sub>²](1 - 3α²) = ω² · (1+α)/(1-α)
+</div>
+
+<h4>Passo 4: Calcular a curtose</h4>
+
+<div class="formula-box resultado">
+    <strong>Curtose do ARCH(1):</strong><br><br>
+    K<sub>y</sub> = 3(1 - α²) / (1 - 3α²)
+</div>
+
+<div class="formula-box alerta">
+    <strong>Condição de Existência:</strong> 1 - 3α² > 0 ⟹ α < 1/√3 ≈ 0.577
+</div>
+
+<h3>6.3 Curtose do GARCH(1,1)</h3>
+
+<p>O procedimento é similar, mas mais trabalhoso:</p>
+
+<div class="formula-box resultado">
+    <strong>Curtose do GARCH(1,1):</strong><br><br>
+    K<sub>y</sub> = 3[1 - (α+β)²] / [1 - (α+β)² - 2α²]
+</div>
+
+<div class="formula-box alerta">
+    <strong>Condição de Existência:</strong> 1 - (α+β)² - 2α² > 0
+</div>
+</section>
+
+<!-- SEÇÃO 7 -->
+<section id="ar-quadrados">
+<h2>7. Representação AR para y²</h2>
+
+<h3>7.1 ARCH(1) como AR(1) em y²</h3>
+
+<div class="passo">
+    <span class="passo-num">1</span>
+    <strong>Partindo de:</strong> y<sub>t</sub>² = h<sub>t</sub> ε<sub>t</sub>² = (ω + α y<sub>t-1</sub>²) ε<sub>t</sub>²
+</div>
+
+<div class="passo">
+    <span class="passo-num">2</span>
+    <strong>Definindo o choque de volatilidade:</strong> ν<sub>t</sub> = y<sub>t</sub>² - h<sub>t</sub><br>
+    Note que E[ν<sub>t</sub> | I<sub>t-1</sub>] = 0 (este é um MDS!)
+</div>
+
+<div class="passo">
+    <span class="passo-num">3</span>
+    <strong>Reescrevendo:</strong><br>
+    y<sub>t</sub>² = h<sub>t</sub> + ν<sub>t</sub> = ω + α y<sub>t-1</sub>² + ν<sub>t</sub>
+</div>
+
+<div class="formula-box resultado">
+    <strong>Representação AR(1) dos quadrados:</strong><br><br>
+    y<sub>t</sub>² = ω + α y<sub>t-1</sub>² + ν<sub>t</sub><br><br>
+    onde ν<sub>t</sub> = y<sub>t</sub>² - h<sub>t</sub> = h<sub>t</sub>(ε<sub>t</sub>² - 1)
+</div>
+
+<h3>7.2 GARCH(1,1) como ARMA(1,1) em y²</h3>
+
+<div class="passo">
+    <span class="passo-num">1</span>
+    <strong>Definindo:</strong> ν<sub>t</sub> = y<sub>t</sub>² - h<sub>t</sub>
+</div>
+
+<div class="passo">
+    <span class="passo-num">2</span>
+    <strong>Da equação de h<sub>t</sub>:</strong><br>
+    h<sub>t</sub> = ω + α y<sub>t-1</sub>² + β h<sub>t-1</sub>
+</div>
+
+<div class="passo">
+    <span class="passo-num">3</span>
+    <strong>Substituindo y<sub>t</sub>² = h<sub>t</sub> + ν<sub>t</sub>:</strong><br>
+    y<sub>t</sub>² - ν<sub>t</sub> = ω + α y<sub>t-1</sub>² + β(y<sub>t-1</sub>² - ν<sub>t-1</sub>)
+</div>
+
+<div class="formula-box resultado">
+    <strong>Representação ARMA(1,1):</strong><br><br>
+    y<sub>t</sub>² = ω + (α + β) y<sub>t-1</sub>² + ν<sub>t</sub> - β ν<sub>t-1</sub>
+</div>
+
+<p>Este é um ARMA(1,1) com coeficiente AR = (α + β) e coeficiente MA = β.</p>
+</section>
+
+<!-- SEÇÃO 8 -->
+<section id="fac">
+<h2>8. Função de Autocorrelação (FAC)</h2>
+
+<h3>8.1 FAC de um Processo AR(1)</h3>
+
+<p>Para x<sub>t</sub> = μ + φ(x<sub>t-1</sub> - μ) + e<sub>t</sub>:</p>
+
+<div class="formula-box importante">
+    <strong>FAC do AR(1):</strong><br><br>
+    ρ<sub>k</sub> = φ<sup>k</sup>, &nbsp;&nbsp;&nbsp; k = 0, 1, 2, ...
+</div>
+
+<h3>8.2 FAC de y² no ARCH(1)</h3>
+
+<p>Como y<sub>t</sub>² segue AR(1) com coeficiente α:</p>
+
+<div class="formula-box resultado">
+    <strong>FAC de y² no ARCH(1):</strong><br><br>
+    ρ<sub>k</sub>(y<sub>t</sub>²) = α<sup>k</sup>
+</div>
+
+<div class="exemplo">
+    Se α = 0.3, então:<br>
+    ρ₁ = 0.3, ρ₂ = 0.09, ρ₃ = 0.027, ...
+</div>
+
+<div class="propriedade">
+    <strong>Memória da Volatilidade:</strong> Se α ≈ 1, então ρ<sub>k</sub> ≈ 1 para k pequeno, indicando que choques de volatilidade persistem por muito tempo. Isso caracteriza o fenômeno de <em>clustering de volatilidade</em>.
+</div>
+
+<h3>8.3 FAC de y² no GARCH(1,1)</h3>
+
+<p>Para um ARMA(1,1) com AR = φ e MA = θ, a autocorrelação de ordem 1 é:</p>
+
+<div class="formula-box">
+    ρ₁ = (1 - θφ)(φ - θ) / (1 - 2θφ + θ²)
+</div>
+
+<p>No GARCH(1,1), φ = α + β e θ = β:</p>
+
+<div class="formula-box resultado">
+    <strong>ρ₁ de y² no GARCH(1,1):</strong><br><br>
+    ρ₁(y<sub>t</sub>²) = α(1 - β² - αβ) / (1 - β² - 2αβ)
+</div>
+</section>
+
+<!-- SEÇÃO 9 -->
+<section id="condicoes">
+<h2>9. Condições de Estacionariedade</h2>
+
+<h3>9.1 ARCH(1)</h3>
+
+<table>
+    <tr>
+        <th>Condição</th>
+        <th>Garante</th>
+    </tr>
+    <tr>
+        <td>α < 1</td>
+        <td>Variância incondicional finita</td>
+    </tr>
+    <tr>
+        <td>α < 1/√3 ≈ 0.577</td>
+        <td>Curtose finita (4º momento)</td>
+    </tr>
+</table>
+
+<h3>9.2 GARCH(1,1)</h3>
+
+<table>
+    <tr>
+        <th>Condição</th>
+        <th>Garante</th>
+    </tr>
+    <tr>
+        <td>α + β < 1</td>
+        <td>Estacionariedade fraca (variância finita)</td>
+    </tr>
+    <tr>
+        <td>1 - (α+β)² - 2α² > 0</td>
+        <td>Curtose finita</td>
+    </tr>
+</table>
+
+<div class="dica">
+    O parâmetro α + β mede a <strong>persistência</strong> da volatilidade. Valores próximos de 1 indicam que choques têm efeitos duradouros.
+</div>
+
+<div class="propriedade">
+    <strong>Comparação das Condições:</strong><br>
+    A condição para curtose finita (1 - (α+β)² - 2α² > 0) é <strong>mais restritiva</strong> que a condição de estacionariedade (α + β < 1). Ou seja, é possível ter variância finita mas curtose infinita!
+</div>
+</section>
+
+<!-- SEÇÃO 10 -->
+<section id="resumo-final">
+<h2>10. Resumo de Fórmulas</h2>
+
+<div class="resumo">
+<h3>📋 Fórmulas Essenciais</h3>
+
+<h4>Momentos da Normal N(0,1)</h4>
+<table>
+    <tr><th>E[ε]</th><th>E[ε²]</th><th>E[ε³]</th><th>E[ε⁴]</th></tr>
+    <tr><td>0</td><td>1</td><td>0</td><td>3</td></tr>
+</table>
+
+<h4>ARCH(1): y<sub>t</sub> = h<sub>t</sub><sup>1/2</sup>ε<sub>t</sub>, h<sub>t</sub> = ω + αy<sub>t-1</sub>²</h4>
+<table>
+    <tr>
+        <th>Quantidade</th>
+        <th>Fórmula</th>
+    </tr>
+    <tr>
+        <td>Média condicional</td>
+        <td>E[y<sub>t</sub>|I<sub>t-1</sub>] = 0</td>
+    </tr>
+    <tr>
+        <td>Variância condicional</td>
+        <td>h<sub>t</sub> = ω + αy<sub>t-1</sub>²</td>
+    </tr>
+    <tr>
+        <td>Variância incondicional</td>
+        <td>ω/(1-α)</td>
+    </tr>
+    <tr>
+        <td>Curtose</td>
+        <td>3(1-α²)/(1-3α²)</td>
+    </tr>
+    <tr>
+        <td>FAC de y²</td>
+        <td>ρ<sub>k</sub> = α<sup>k</sup></td>
+    </tr>
+</table>
+
+<h4>GARCH(1,1): h<sub>t</sub> = ω + αy<sub>t-1</sub>² + βh<sub>t-1</sub></h4>
+<table>
+    <tr>
+        <th>Quantidade</th>
+        <th>Fórmula</th>
+    </tr>
+    <tr>
+        <td>Variância incondicional</td>
+        <td>σ̄² = ω/(1-α-β)</td>
+    </tr>
+    <tr>
+        <td>Curtose</td>
+        <td>3[1-(α+β)²]/[1-(α+β)²-2α²]</td>
+    </tr>
+    <tr>
+        <td>ρ₁ de y²</td>
+        <td>α(1-β²-αβ)/(1-β²-2αβ)</td>
+    </tr>
+</table>
+
+<h4>AR(1)-ARCH(1): y<sub>t</sub> = φy<sub>t-1</sub> + u<sub>t</sub></h4>
+<table>
+    <tr>
+        <th>Quantidade</th>
+        <th>Fórmula</th>
+    </tr>
+    <tr>
+        <td>Média condicional</td>
+        <td>φy<sub>t-1</sub></td>
+    </tr>
+    <tr>
+        <td>Média incondicional</td>
+        <td>0</td>
+    </tr>
+    <tr>
+        <td>Variância incondicional</td>
+        <td>ω/[(1-α)(1-φ²)]</td>
+    </tr>
+</table>
+</div>
+
+<div class="formula-box alerta">
+    <strong>⚠️ Lembre-se sempre:</strong><br><br>
+    1. E[ε<sub>t</sub>⁴] = 3 é fundamental para curtose<br>
+    2. Use estacionariedade: E[y<sub>t</sub>²] = E[y<sub>t-1</sub>²]<br>
+    3. ε<sub>t</sub> independente de I<sub>t-1</sub> ⟹ E[h<sub>t</sub>ε<sub>t</sub>²] = E[h<sub>t</sub>]E[ε<sub>t</sub>²]<br>
+    4. Verifique condições de existência antes de aplicar fórmulas
+</div>
+
+</section>
+
+<!-- ============================================== -->
+<!-- SEÇÕES NOVAS PARA A LISTA ADICIONAL -->
+<!-- ============================================== -->
+
+<section id="raiz-unitaria">
+<h2>11. 🆕 Raiz Unitária e Testes de Estacionariedade</h2>
+
+<p>Antes de modelar a volatilidade, devemos garantir que a série é estacionária na média.</p>
+
+<h3>11.1 O Processo com Raiz Unitária</h3>
+
+<div class="formula-box">
+    <strong>Processo AR(1) com possível raiz unitária:</strong><br><br>
+    y<sub>t</sub> = φ y<sub>t-1</sub> + ε<sub>t</sub>, &nbsp;&nbsp;&nbsp; ε<sub>t</sub> ~ iid(0, σ²)
+</div>
+
+<div class="definicao">
+    <strong>Raiz Unitária:</strong> Quando φ = 1, o processo é chamado de <em>passeio aleatório</em> e não é estacionário. A "raiz" da equação característica 1 - φL = 0 é exatamente 1.
+</div>
+
+<h3>11.2 Por que a Distribuição t-Student Colapsa</h3>
+
+<p>Considere o estimador OLS de φ:</p>
+
+<div class="formula-box">
+    φ̂ = Σ y<sub>t</sub> y<sub>t-1</sub> / Σ y<sub>t-1</sub>²
+</div>
+
+<div class="teorema">
+    <div class="teorema-titulo">Comportamento do Denominador sob H₀: φ = 1</div>
+    <p>Quando φ = 1, temos y<sub>t</sub> = y<sub>t-1</sub> + ε<sub>t</sub>, ou seja:</p>
+    <p style="text-align: center;">y<sub>t</sub> = Σ<sub>i=1</sub><sup>t</sup> ε<sub>i</sub> (assumindo y₀ = 0)</p>
+    <p>Portanto:</p>
+    <p style="text-align: center;">E[y<sub>t</sub>²] = t · σ² (variância cresce linearmente com t)</p>
+</div>
+
+<div class="passo">
+    <span class="passo-num">1</span>
+    <strong>Variância de y<sub>t-1</sub>²:</strong><br>
+    Var(y<sub>t-1</sub>) = (t-1)σ², logo cada termo y<sub>t-1</sub>² tem ordem O(t)
+</div>
+
+<div class="passo">
+    <span class="passo-num">2</span>
+    <strong>Soma Σ y<sub>t-1</sub>²:</strong><br>
+    Σ<sub>t=1</sub><sup>T</sup> y<sub>t-1</sub>² tem T termos, cada um de ordem O(t)<br>
+    Portanto: Σ y<sub>t-1</sub>² = O(T²)
+</div>
+
+<div class="formula-box resultado">
+    <strong>Resultado Fundamental:</strong><br><br>
+    Sob H₀: φ = 1, o denominador Σ y<sub>t-1</sub>² cresce a taxa <strong>T²</strong><br><br>
+    (Em contraste com o caso estacionário onde cresce a taxa T)
+</div>
+
+<div class="propriedade">
+    <strong>Por que isso invalida a tabela t-Student:</strong><br><br>
+    • No caso estacionário (|φ| < 1): √T(φ̂ - φ) → N(0, 1-φ²)<br><br>
+    • No caso de raiz unitária (φ = 1): T(φ̂ - 1) → distribuição não-normal (Dickey-Fuller)<br><br>
+    A taxa de convergência muda de √T para T, e a distribuição limite deixa de ser normal, sendo expressa em termos de movimentos Brownianos.
+</div>
+
+<div class="formula-box alerta">
+    <strong>Consequência Prática:</strong><br><br>
+    Usar valores críticos da t-Student para testar H₀: φ = 1 levaria a rejeitar a hipótese nula com frequência muito menor que o nível nominal. Por isso, usamos a <strong>tabela de Dickey-Fuller</strong>.
+</div>
+</section>
+
+<section id="tendencias">
+<h2>12. 🆕 Tendência Determinística vs. Estocástica</h2>
+
+<h3>12.1 Os Dois Modelos</h3>
+
+<div class="formula-box">
+    <strong>Modelo A - Tendência Determinística:</strong><br><br>
+    y<sub>t</sub> = α + βt + ε<sub>t</sub>, &nbsp;&nbsp;&nbsp; ε<sub>t</sub> ~ iid(0, σ²)
+</div>
+
+<div class="formula-box roxo">
+    <strong>Modelo B - Tendência Estocástica (Passeio Aleatório com Drift):</strong><br><br>
+    y<sub>t</sub> = μ + y<sub>t-1</sub> + ε<sub>t</sub>, &nbsp;&nbsp;&nbsp; ε<sub>t</sub> ~ iid(0, σ²)
+</div>
+
+<h3>12.2 Propriedades do Modelo A</h3>
+
+<div class="passo">
+    <span class="passo-num">1</span>
+    <strong>Média:</strong> E[y<sub>t</sub>] = α + βt (depende de t, mas de forma determinística)
+</div>
+
+<div class="passo">
+    <span class="passo-num">2</span>
+    <strong>Variância:</strong> Var(y<sub>t</sub>) = σ² (constante!)
+</div>
+
+<div class="passo">
+    <span class="passo-num">3</span>
+    <strong>Remoção de tendência:</strong> Regredindo y<sub>t</sub> contra t, os resíduos ε̂<sub>t</sub> são estacionários
+</div>
+
+<h3>12.3 Propriedades do Modelo B</h3>
+
+<div class="passo">
+    <span class="passo-num">1</span>
+    <strong>Solução recursiva:</strong> y<sub>t</sub> = y₀ + μt + Σ<sub>i=1</sub><sup>t</sup> ε<sub>i</sub>
+</div>
+
+<div class="passo">
+    <span class="passo-num">2</span>
+    <strong>Média:</strong> E[y<sub>t</sub>] = y₀ + μt (também cresce com t)
+</div>
+
+<div class="passo">
+    <span class="passo-num">3</span>
+    <strong>Variância:</strong> Var(y<sub>t</sub>) = t · σ² → ∞ quando t → ∞
+</div>
+
+<div class="formula-box alerta">
+    <strong>A Variância DIVERGE no Modelo B:</strong><br><br>
+    Var(y<sub>t</sub>) = Var(Σ<sub>i=1</sub><sup>t</sup> ε<sub>i</sub>) = Σ<sub>i=1</sub><sup>t</sup> Var(ε<sub>i</sub>) = t · σ²<br><br>
+    Isso viola a condição de estacionariedade!
+</div>
+
+<h3>12.4 Por que a Remoção de Tendência Linear Falha no Modelo B</h3>
+
+<div class="teorema">
+    <div class="teorema-titulo">O Problema da Regressão Espúria</div>
+    <p>Se regredirmos y<sub>t</sub> = a + bt + resíduo no Modelo B:</p>
+    <ul>
+        <li>Os coeficientes â e b̂ convergem para valores que "capturam" parcialmente a tendência estocástica</li>
+        <li>Mas os <strong>resíduos ainda contêm</strong> o componente acumulado Σε<sub>i</sub></li>
+        <li>Esses resíduos têm variância crescente e não são estacionários</li>
+    </ul>
+</div>
+
+<div class="propriedade">
+    <strong>Tratamento Correto:</strong><br>
+    • Modelo A: Remover tendência determinística (regressão contra t)<br>
+    • Modelo B: Tomar <strong>diferenças</strong> (Δy<sub>t</sub> = y<sub>t</sub> - y<sub>t-1</sub> = μ + ε<sub>t</sub>)
+</div>
+</section>
+
+<section id="mds">
+<h2>13. 🆕 Sequência de Diferenças de Martingais (MDS)</h2>
+
+<h3>13.1 Definição</h3>
+
+<div class="definicao">
+    <strong>MDS (Martingale Difference Sequence):</strong> Uma sequência {ν<sub>t</sub>} é uma MDS se:<br><br>
+    <center><strong>E[ν<sub>t</sub> | I<sub>t-1</sub>] = 0</strong></center><br>
+    Ou seja, o valor esperado condicional ao passado é zero.
+</div>
+
+<h3>13.2 Verificação para o Choque de Volatilidade</h3>
+
+<p>No contexto GARCH, definimos ν<sub>t</sub> = y<sub>t</sub>² - h<sub>t</sub>:</p>
+
+<div class="passo">
+    <span class="passo-num">1</span>
+    <strong>Calculando E[ν<sub>t</sub> | I<sub>t-1</sub>]:</strong><br>
+    E[y<sub>t</sub>² - h<sub>t</sub> | I<sub>t-1</sub>] = E[y<sub>t</sub>² | I<sub>t-1</sub>] - E[h<sub>t</sub> | I<sub>t-1</sub>]
+</div>
+
+<div class="passo">
+    <span class="passo-num">2</span>
+    <strong>Note que h<sub>t</sub> é I<sub>t-1</sub>-mensurável:</strong><br>
+    h<sub>t</sub> = ω + αy<sub>t-1</sub>² + βh<sub>t-1</sub> depende apenas de I<sub>t-1</sub><br>
+    Logo: E[h<sub>t</sub> | I<sub>t-1</sub>] = h<sub>t</sub>
+</div>
+
+<div class="passo">
+    <span class="passo-num">3</span>
+    <strong>E sabemos que:</strong><br>
+    E[y<sub>t</sub>² | I<sub>t-1</sub>] = h<sub>t</sub>
+</div>
+
+<div class="formula-box resultado">
+    <strong>Verificação:</strong><br><br>
+    E[ν<sub>t</sub> | I<sub>t-1</sub>] = h<sub>t</sub> - h<sub>t</sub> = 0 ✓<br><br>
+    Portanto, ν<sub>t</sub> = y<sub>t</sub>² - h<sub>t</sub> é uma <strong>MDS</strong>.
+</div>
+
+<h3>13.3 Propriedades Importantes de uma MDS</h3>
+
+<div class="propriedade">
+    <strong>Propriedades de MDS:</strong><br><br>
+    1. E[ν<sub>t</sub>] = 0 (média incondicional também é zero)<br><br>
+    2. Cov(ν<sub>t</sub>, ν<sub>t-k</sub>) = 0 para k ≠ 0 (não-correlacionada serialmente)<br><br>
+    3. Mas Var(ν<sub>t</sub> | I<sub>t-1</sub>) pode variar! (não é necessariamente homocedástica)
+</div>
+</section>
+
+<section id="ortogonalidade">
+<h2>14. 🆕 Ortogonalidade e Consistência de OLS</h2>
+
+<h3>14.1 O Modelo AR(1)-ARCH(1)</h3>
+
+<div class="formula-box">
+    y<sub>t</sub> = φ y<sub>t-1</sub> + u<sub>t</sub><br><br>
+    u<sub>t</sub> = h<sub>t</sub><sup>1/2</sup> ε<sub>t</sub>, &nbsp;&nbsp;&nbsp; ε<sub>t</sub> ~ N(0,1)<br><br>
+    h<sub>t</sub> = ω + α u<sub>t-1</sub>²
+</div>
+
+<h3>14.2 Prova de que E[u<sub>t</sub> u<sub>t-k</sub>] = 0 para k ≠ 0</h3>
+
+<div class="passo">
+    <span class="passo-num">1</span>
+    <strong>Para k > 0:</strong><br>
+    E[u<sub>t</sub> u<sub>t-k</sub>] = E[E[u<sub>t</sub> u<sub>t-k</sub> | I<sub>t-1</sub>]]
+</div>
+
+<div class="passo">
+    <span class="passo-num">2</span>
+    <strong>Note que u<sub>t-k</sub> ∈ I<sub>t-1</sub> quando k ≥ 1:</strong><br>
+    E[u<sub>t</sub> u<sub>t-k</sub> | I<sub>t-1</sub>] = u<sub>t-k</sub> · E[u<sub>t</sub> | I<sub>t-1</sub>]
+</div>
+
+<div class="passo">
+    <span class="passo-num">3</span>
+    <strong>Calculando E[u<sub>t</sub> | I<sub>t-1</sub>]:</strong><br>
+    E[u<sub>t</sub> | I<sub>t-1</sub>] = E[h<sub>t</sub><sup>1/2</sup> ε<sub>t</sub> | I<sub>t-1</sub>] = h<sub>t</sub><sup>1/2</sup> E[ε<sub>t</sub>] = 0
+</div>
+
+<div class="formula-box resultado">
+    <strong>Resultado:</strong><br><br>
+    E[u<sub>t</sub> u<sub>t-k</sub>] = E[u<sub>t-k</sub> · 0] = 0 para todo k ≠ 0<br><br>
+    Os erros são <strong>não-correlacionados</strong> (mas não independentes!)
+</div>
+
+<h3>14.3 Implicação para OLS</h3>
+
+<div class="teorema">
+    <div class="teorema-titulo">Consistência do Estimador OLS</div>
+    <p>Para o modelo y<sub>t</sub> = φy<sub>t-1</sub> + u<sub>t</sub>, o estimador OLS de φ é:</p>
+    <p style="text-align: center;">φ̂ = Σ y<sub>t</sub> y<sub>t-1</sub> / Σ y<sub>t-1</sub>²</p>
+    <p>A condição para <strong>consistência</strong> é:</p>
+    <p style="text-align: center;">E[u<sub>t</sub> | y<sub>t-1</sub>, y<sub>t-2</sub>, ...] = 0</p>
+    <p>Como E[u<sub>t</sub> | I<sub>t-1</sub>] = 0, esta condição é satisfeita!</p>
+</div>
+
+<div class="formula-box resultado">
+    <strong>Conclusão:</strong><br><br>
+    Embora u<sub>t</sub> seja heterocedástico (Var(u<sub>t</sub>|I<sub>t-1</sub>) = h<sub>t</sub> varia),<br>
+    OLS é <strong>consistente</strong> para φ porque E[u<sub>t</sub>|I<sub>t-1</sub>] = 0.<br><br>
+    Porém, OLS <strong>não é eficiente</strong> devido à heterocedasticidade.
+</div>
+</section>
+
+<section id="previsao">
+<h2>15. 🆕 Previsão de Volatilidade e VaR</h2>
+
+<h3>15.1 Fórmula de Previsão Multi-Passos</h3>
+
+<p>Para o GARCH(1,1), a previsão k passos à frente é:</p>
+
+<div class="formula-box importante">
+    <strong>Previsão de Variância k-passos:</strong><br><br>
+    E<sub>t</sub>[h<sub>t+k</sub>] = σ̄² + (α+β)<sup>k-1</sup> (h<sub>t+1</sub> - σ̄²)<br><br>
+    onde σ̄² = ω/(1-α-β) é a variância de longo prazo
+</div>
+
+<h3>15.2 Interpretação da Fórmula</h3>
+
+<div class="propriedade">
+    <strong>Componentes:</strong><br><br>
+    • σ̄²: nível de longo prazo da variância<br><br>
+    • (h<sub>t+1</sub> - σ̄²): desvio atual da variância em relação ao longo prazo<br><br>
+    • (α+β)<sup>k-1</sup>: fator de decaimento (memória)
+</div>
+
+<h3>15.3 A Falácia da Raiz do Tempo</h3>
+
+<div class="definicao">
+    <strong>Regra da Raiz do Tempo:</strong> Assumindo retornos iid, a volatilidade de n dias seria:<br><br>
+    <center>σ<sub>n dias</sub> = σ<sub>1 dia</sub> × √n</center><br>
+    Isso equivale a assumir Var(Σr<sub>t</sub>) = n × Var(r<sub>t</sub>)
+</div>
+
+<div class="formula-box alerta">
+    <strong>Por que falha em períodos de crise:</strong><br><br>
+    Se h<sub>t+1</sub> >> σ̄² (volatilidade atual muito acima da média) e (α+β) ≈ 1:<br><br>
+    E<sub>t</sub>[h<sub>t+k</sub>] ≈ σ̄² + (h<sub>t+1</sub> - σ̄²) = h<sub>t+1</sub><br><br>
+    A volatilidade permanece <strong>persistentemente alta</strong>, não retornando rapidamente à média!
+</div>
+
+<h3>15.4 Exemplo Numérico</h3>
+
+<div class="exemplo">
+    <strong>Parâmetros típicos:</strong> ω = 10⁻⁶, α = 0.05, β = 0.94, logo α+β = 0.99<br><br>
+    <strong>Variância de longo prazo:</strong> σ̄² = 10⁻⁶/(1-0.99) = 10⁻⁴ (≈ 1% ao dia)<br><br>
+    <strong>Em crise:</strong> Suponha h<sub>t+1</sub> = 9×10⁻⁴ (≈ 3% ao dia, 9x a média)<br><br>
+    <strong>Previsão para 10 dias:</strong><br>
+    E<sub>t</sub>[h<sub>t+10</sub>] = 10⁻⁴ + (0.99)⁹ × (9×10⁻⁴ - 10⁻⁴)<br>
+    = 10⁻⁴ + 0.914 × 8×10⁻⁴ = 8.31×10⁻⁴<br><br>
+    A volatilidade ainda está 8.3x acima da média após 10 dias!
+</div>
+
+<div class="propriedade">
+    <strong>Implicação para VaR:</strong><br>
+    A regra √10 subestima severamente o risco porque assume que a volatilidade retorna instantaneamente à média, ignorando a <strong>persistência</strong> capturada pelo alto valor de (α+β).
+</div>
+</section>
+
+<section id="ehtsq">
+<h2>16. 🆕 Cálculo Detalhado de E[h²<sub>t</sub>] no GARCH(1,1)</h2>
+
+<p>Este cálculo é necessário para derivar a curtose.</p>
+
+<h3>16.1 Expansão do Trinômio</h3>
+
+<div class="passo">
+    <span class="passo-num">1</span>
+    <strong>Partindo de:</strong><br>
+    h<sub>t</sub> = ω + αy<sub>t-1</sub>² + βh<sub>t-1</sub>
+</div>
+
+<div class="passo">
+    <span class="passo-num">2</span>
+    <strong>Elevando ao quadrado:</strong><br>
+    h<sub>t</sub>² = (ω + αy<sub>t-1</sub>² + βh<sub>t-1</sub>)²<br><br>
+    = ω² + α²y<sub>t-1</sub>⁴ + β²h<sub>t-1</sub>²<br>
+    + 2ωαy<sub>t-1</sub>² + 2ωβh<sub>t-1</sub> + 2αβy<sub>t-1</sub>²h<sub>t-1</sub>
+</div>
+
+<h3>16.2 Tomando Esperança</h3>
+
+<div class="passo">
+    <span class="passo-num">3</span>
+    <strong>Aplicando E[·] e usando estacionariedade:</strong><br>
+    E[h<sub>t</sub>²] = ω² + α²μ₄ + β²E[h<sub>t</sub>²] + 2ωαμ₂ + 2ωβμ₂ + 2αβE[y<sub>t-1</sub>²h<sub>t-1</sub>]
+</div>
+
+<div class="passo">
+    <span class="passo-num">4</span>
+    <strong>Calculando E[y<sub>t-1</sub>²h<sub>t-1</sub>]:</strong><br>
+    y<sub>t-1</sub>² = h<sub>t-1</sub>ε<sub>t-1</sub>², então:<br>
+    E[y<sub>t-1</sub>²h<sub>t-1</sub>] = E[h<sub>t-1</sub>²ε<sub>t-1</sub>²] = E[h<sub>t-1</sub>²]E[ε<sub>t-1</sub>²] = E[h<sub>t</sub>²]
+</div>
+
+<div class="passo">
+    <span class="passo-num">5</span>
+    <strong>Substituindo e agrupando:</strong><br>
+    E[h<sub>t</sub>²] = ω² + α²μ₄ + β²E[h<sub>t</sub>²] + 2ω(α+β)μ₂ + 2αβE[h<sub>t</sub>²]<br><br>
+    E[h<sub>t</sub>²](1 - β² - 2αβ) = ω² + α²μ₄ + 2ω(α+β)μ₂
+</div>
+
+<div class="passo">
+    <span class="passo-num">6</span>
+    <strong>Usando μ₄ = 3E[h<sub>t</sub>²]:</strong><br>
+    E[h<sub>t</sub>²](1 - β² - 2αβ - 3α²) = ω² + 2ω(α+β)μ₂
+</div>
+
+<div class="passo">
+    <span class="passo-num">7</span>
+    <strong>Simplificando o lado direito com μ₂ = ω/(1-α-β):</strong><br>
+    ω² + 2ω(α+β) · ω/(1-α-β) = ω²[1 + 2(α+β)/(1-α-β)]<br>
+    = ω² · (1+α+β)/(1-α-β)
+</div>
+
+<div class="formula-box resultado">
+    <strong>Resultado Final:</strong><br><br>
+    E[h<sub>t</sub>²] = ω²(1+α+β) / [(1-α-β)(1-(α+β)² - 2α²)]
+</div>
+
+<h3>16.3 Derivação da Curtose</h3>
+
+<div class="passo">
+    <span class="passo-num">8</span>
+    <strong>Quarto momento:</strong> μ₄ = 3E[h<sub>t</sub>²]
+</div>
+
+<div class="passo">
+    <span class="passo-num">9</span>
+    <strong>Curtose:</strong><br>
+    K = μ₄/μ₂² = 3E[h<sub>t</sub>²] / [ω/(1-α-β)]²<br><br>
+    = 3 · ω²(1+α+β)/[(1-α-β)(1-(α+β)²-2α²)] · (1-α-β)²/ω²<br><br>
+    = 3(1-α-β)(1+α+β) / [1-(α+β)²-2α²]<br><br>
+    = 3[1-(α+β)²] / [1-(α+β)²-2α²]
+</div>
+
+<div class="formula-box resultado">
+    <strong>Curtose do GARCH(1,1):</strong><br><br>
+    K = 3[1-(α+β)²] / [1-(α+β)²-2α²]
+</div>
+
+<div class="propriedade">
+    <strong>Análise da Condição de Existência:</strong><br><br>
+    • Denominador > 0 requer: 1 - (α+β)² - 2α² > 0<br><br>
+    • Isso é <strong>mais restritivo</strong> que α+β < 1<br><br>
+    • Exemplo: se α = 0.3 e β = 0.6, então α+β = 0.9 < 1 ✓<br>
+      Mas 1 - 0.81 - 0.18 = 0.01 > 0 ✓ (curtose existe)<br><br>
+    • Se α = 0.4 e β = 0.5, então α+β = 0.9 < 1 ✓<br>
+      Mas 1 - 0.81 - 0.32 = -0.13 < 0 ✗ (curtose infinita!)
+</div>
+</section>
+
+<footer style="text-align: center; margin-top: 50px; padding: 20px; border-top: 2px solid #1a237e; color: #666;">
+    <p style="font-size: 1.2em; color: #1a237e;"><strong>📚 Apostila de Modelos ARCH e GARCH</strong></p>
+    <p><strong>Autor:</strong> Lucas Rafael de Andrade</p>
+    <p><em>Material de apoio para exercícios de séries temporais financeiras</em></p>
+</footer>
+
+</body>
+</html>
